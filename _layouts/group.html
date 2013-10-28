@@ -2,10 +2,286 @@
 layout: main
 css: ../stylesheets/stylesheet.css
 ---
-<h1>Logstash</h1>
+<p>Expliquer comment se logger aux machines amazon</p>
 
+<h1>Logstash</h1>
+<p>Logstash est un pipe permettant de collecter, parser, et stocker des logs à l'aide d'entrées, de filtres et de sorties (input, filter, output). La phase de parsing permet d'ajouter de la sémantique à notre événement, en ajoutant, modifiant ou supprimant des champs, des tags, des types, etc...</p>
+
+<p>Dans cette première partie de l'atelier, nous allons donc découvrir logstash et le configurer pour structurer nos logs afin qu'ils soient facilement exploitables par la suite.</p>
+
+<h2>Découverte de logstash</h2>
+<p>Copier le jar logstash disponible dans le répertoire <code>~/Tools</code> dans le répertoire <code>~/workshop</code></p>
+<p>Dans le répertoire <code>~/workshop</code>, créer un fichier de configuration logstash nommé <code>logstash-logback.conf</code></p>
+
+{% highlight kconfig %}
+input {
+  stdin { } 
+}
+ 
+output {
+  stdout { debug => true }
+}
+{% endhighlight %}
+
+<p>Vous pouvez maintenant exécuter logstash grâce à la commande suivante:</p>
+{% highlight bash %}
+$ java -jar logstash-1.2.1-flatjar.jar agent -f logstash-logback.conf
+{% endhighlight %}
+
+<p>Logstash est prêt à interpréter ce qu'il recevera sur l'entrée standard. Pour un premier test, passez lui la ligne suivante en entrée:</p>
+
+{% highlight bash %}02-10-2013 14:26:27.724 [pool-10-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=9205,ip=217.109.49.180,cat=TSHIRT{% endhighlight %}
+
+<p>Vous devez normalement voir un message de la forme suivante s'afficher:</p>
+{% highlight bash %}
+{
+    "message" => "02-10-2013 14:26:27.724 [pool-10-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=9205,ip=217.109.49.180,cat=TSHIRT",
+    "@timestamp" => "2013-10-25T07:50:26.232Z",
+    "@version" => "1",
+    "host" => "lucid64"
+}
+{% endhighlight %}
+
+<p>On constate que le timestamp enregistré n'est pas du tout lié à celui de la ligne de log. En fait, logstash n'a pas du tout interprété le message. Pour faire celà, il va falloir configurer un filtre pour logstash.</p>
+
+<h2>Ajouter de la sémantique</h2>
+
+<p>Pour configurer logstash afin qu'il puisse interpréter les données qu'il va recevoir en entrée, nous allons configurer plusieurs filtres.</p>
+
+<h3>Filtre Grok</h3>
+
+<p>Le filtre Grok met à votre disposition plusieurs patterns pour parser les lignes de logs.</p>
+
+<p>Ressources:
+	<ul>
+		<li><a target="_blank" href="http://logstash.net/docs/1.2.1/filters/grok">Documentation du filtre Grok</a></li>
+		<li><a target="_blank" href="https://github.com/logstash/logstash/blob/master/patterns/grok-patterns">Les patterns grok pré-définis</a></li>
+		<li><a target="_blank" href="http://grokdebug.herokuapp.com/">Debugger</a></li>
+	</ul>
+</p>
+
+<p>Dans un premier temps, nous voulons juste parser le niveau de log. Pour celà, le pattern <code>LOGLEVEL</code> va nous être utile.</p>
+
+{% highlight bash %}
+filter {
+   grok {
+      match => ["message","%{LOGLEVEL:log_level}"]
+   }
+}
+{% endhighlight %}
+
+<p>Vous pouvez relancer logstash et repasser la ligne de log:</p>
+
+{% highlight bash %}02-10-2013 14:26:27.724 [pool-10-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=9205,ip=217.109.49.180,cat=TSHIRT{% endhighlight %}
+
+<p>Cette fois, on remarque qu'un élément a été analysé, l'élément <code>log_level</code></p>
+
+{% highlight bash %}
+{
+    "message" => "02-10-2013 14:26:27.724 [pool-10-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=9205,ip=217.109.49.180,cat=TSHIRT",
+    "@timestamp" => "2013-10-27T08:46:51.132Z",
+    "@version" => "1",
+    "host" => "lucid64",
+    "log_level" => "INFO"
+}
+{% endhighlight %}
+
+<p>Nous allons enrichir notre filtre pour parser le reste des lignes:</p>
+
+{% highlight bash %}
+filter {
+   grok {
+      match => ["message","(?<log_date>%{MONTHDAY}-%{MONTHNUM}-%{YEAR} %{HOUR}:%{MINUTE}:%{SECOND}.[0-9]{3}) \[%{NOTSPACE:thread}\] %{LOGLEVEL:log_level} %{NOTSPACE:classname} - %{GREEDYDATA:msg}"]
+   }
+}
+{% endhighlight %}
+
+<p>De nouveau, nous pouvons relancer logstash et lui passer notre ligne de log, cette fois, nous allons avoir un résultat de la forme suivante:</p>
+
+{% highlight bash %}
+{
+    "message" => "02-10-2013 14:26:27.724 [pool-10-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=9205,ip=217.109.49.180,cat=TSHIRT",
+    "@timestamp" => "2013-10-27T10:30:32.242Z",
+    "@version" => "1",
+    "host" => "lucid64",
+    "log_date" => "02-10-2013 14:26:27.724",
+    "thread" => "pool-10-thread-1",
+    "log_level" => "INFO",
+    "classname" => "com.github.vspiewak.loggenerator.SearchRequest",
+    "msg" => "id=9205,ip=217.109.49.180,cat=TSHIRT"
+}
+{% endhighlight %}
+
+<p>Pour alléger la configuration, nous allons extraire l'expression régulière de la date et la définir en tant que pattern:
+	<ul>
+		<li>créez un dossier "patterns" dans le répertoire courant</li>
+		<li>Créez un fichier "logback" dans le dossier "patterns" contenant:</li>
+{% highlight bash %}
+LOG_DATE %{MONTHDAY}-%{MONTHNUM}-%{YEAR} %{HOUR}:%{MINUTE}:%{SECOND}.[0-9]{3}
+{% endhighlight %}		
+	</ul>
+Indiquez ensuite à Grok le dossier contenant vos fichiers de patterns via l'attribut "patterns_dir".
+</p>
+
+<p>La configuration Losgstash devient:
+{% highlight bash %}
+filter { 
+   grok {
+      patterns_dir => "./patterns"
+      match => [ "message", "%{LOG_DATE:log_date} \[%{NOTSPACE:thread}\] %{LOGLEVEL:log_level} %{NOTSPACE:classname} - %{GREEDYDATA:msg}"]
+   }
+}
+{% endhighlight %}      
+
+</p>
+
+<p>À ce niveau, nous constatons que l'intégralité du message a été parsé et est maintenant interprété. Par contre, même si nous avons correctement interprété la date du log, le champ <code>@timestamp</code> contient toujours la date de lecture par logstash. Il serait plus intéressant de mettre dans ce champ la date de log. Pour celà, il va falloir utiliser un autre type de filtre, le filtre date.</p>
+
+<h3>Filtre date</h3>
+
+<p>Ressources:
+    <ul>
+        <li><a target="_blank" href="http://logstash.net/docs/1.2.1/filters/date">Documentation du filtre date</a></li>
+    </ul>
+</p>
+
+<p>Le filtre date est l'un des filtre les plus important. Il permet en effet de parser une date et de l'utiliser pour le champ <code>@timestamp</code>. Rajoutez le filtre dans le fichier de configuration:
+{% highlight bash %}
+filter {
+    [...]
+    date {
+        match => ["log_date","dd-MM-YYYY HH:mm:ss.SSS"]
+    }
+}
+{% endhighlight %}
+</p>
+
+<p>En redonnant notre ligne de log en entrée, nous récupérons un retour de la forme suivante:
+{% highlight bash %}
+{
+    "message" => "02-10-2013 14:26:27.724 [pool-10-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=9205,ip=217.109.49.180,cat=TSHIRT",
+    "@timestamp" => "2013-10-02T12:26:27.724Z",
+    "@version" => "1",
+    "host" => "lucid64",
+    "log_date" => "02-10-2013 14:26:27.724",
+    "thread" => "pool-10-thread-1",
+    "log_level" => "INFO",
+    "classname" => "com.github.vspiewak.loggenerator.SearchRequest",
+    "msg" => "id=9205,ip=217.109.49.180,cat=TSHIRT"
+}
+{% endhighlight %}
+</p>
+
+<p>PARLER DE LA TIMEZONE ??</p>
+
+<h3>Filtre kv</h3>
+
+<p>Le filtre kv s'avère très utile lorsque vous voulez parser un champ de type foo=bar comme par exemple une requête HTTP. Ajoutez le filtre kv pour notre example:
+
+{% highlight bash %}
+filter {
+    [...]
+    kv {
+      field_split => ","
+      source => "msg"
+    }
+}
+{% endhighlight %}
+</p>
+
+<p>Relancez logstash et passez lui en entrée la ligne suivante:
+{% highlight bash %}08-10-2013 16:33:49.629 [pool-1-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=41,ip=157.55.34.94,brand=Apple,name=iPhone 5C,model=iPhone 5C - Blanc - Disque 16Go,category=Mobile,color=Blanc,options=Disque 16Go,price=599.0{% endhighlight %}
+</p>
+
+<p>Vous devez obtenir le résultat suivant:
+{% highlight bash %}
+{
+    "message" => "08-10-2013 16:33:49.629 [pool-1-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=41,ip=157.55.34.94,brand=Apple,name=iPhone 5C,model=iPhone 5C - Blanc - Disque 16Go,category=Mobile,color=Blanc,options=Disque 16Go,price=599.0",
+    "@timestamp" => "2013-10-08T14:33:49.629Z",
+    "@version" => "1",
+    "host" => "lucid64",
+    "log_date" => "08-10-2013 16:33:49.629",
+    "thread" => "pool-1-thread-1",
+    "log_level" => "INFO",
+    "classname" => "com.github.vspiewak.loggenerator.SearchRequest",
+    "msg" => "id=41,ip=157.55.34.94,brand=Apple,name=iPhone 5C,model=iPhone 5C - Blanc - Disque 16Go,category=Mobile,color=Blanc,options=Disque 16Go,price=599.0",
+    "id" => "41",
+    "ip" => "157.55.34.94",
+    "brand" => "Apple",
+    "name" => "iPhone 5C",
+    "model" => "iPhone 5C - Blanc - Disque 16Go",
+    "category" => "Mobile",
+    "color" => "Blanc",
+    "options" => "Disque 16Go",
+    "price" => "599.0"
+}
+{% endhighlight %}
+Logstash parse maintenant notre ligne de vente et ajoute automatiquement les champs category, brand, name, model, color, options et price.
+</p>
+
+<h3>Filtre mutate</h3>
+
+<p>OBLIGATOIRE LA MISE EN PLACE DE GEO IP?</p>
+
+<p>METTRE UN LIEN VERS LE FICHIER DE CONFIG COMPLET AU CAS OU POUR QUE LES PARTICIPANTS PUISSENT CONTINUER L'ATELIER</p>
+
+{% highlight bash %}
+input {
+    stdin {}
+    file {
+        path => "/tmp/logstash/*.log"
+    }
+}
+
+filter {
+    grok {
+        patterns_dir => "./patterns"
+        match => ["message","%{LOG_DATE:log_date} \[%{NOTSPACE:thread}\] %{LOGLEVEL:log_level} %{NOTSPACE:classname} - %{GREEDYDATA:msg}"]
+    }
+
+    date {
+        match => ["log_date","dd-MM-YYYY HH:mm:ss.SSS"]
+    }
+
+    kv {
+        field_split => ","
+        source => "msg"
+    }
+
+    if [classname] =~ /.*SellRequest$/ {
+        mutate { add_tag => "sell" }
+    } else if [classname] =~ /SearchRequest$/ {
+        mutate { add_tag => "search" }
+    }
+
+    geoip {
+        source => "ip"
+        database => "./GeoLiteCity.dat"
+    }
+
+    mutate {
+        remove_field => [ "msg" ]
+        convert => [ "id", "integer" ]
+        convert => [ "price", "float" ]
+        split => [ "options", "|" ]
+        add_field => [ "[geoip][lnglat]", "%{[geoip][longitude]}", "tmplat", "%{[geoip][latitude]}" ]
+        merge => [ "[geoip][lnglat]", "tmplat" ]
+        convert => [ "[geoip][lnglat]", "float" ]
+        remove_field => [ "tmplat" ]
+    }
+}
+
+output {
+    stdout { debug => true }
+}
+{% endhighlight %}
+
+<h2>Lancer la génération de log</h2>
 
 <h1>ElasticSearch</h1>
 
+<p>Maintenant que Logstash est configuré pour parser nos logs et les transformer dans un format convenable, nous allons stocker ces logs ElasticSearch. LES AVANTAGES DE FAIRE CA</p>
+
+<p>Comment faire ça?</p>
 
 <h1>Kibana</h1>
