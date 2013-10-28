@@ -221,6 +221,86 @@ Logstash parse maintenant notre ligne de vente et ajoute automatiquement les cha
 
 <h3>Filtre mutate</h3>
 
+<p>Le filtre mutate est un filtre "couteaux suisses" permettant une multitude de modifications.</p>
+
+<h4>Ajout de tag</h4>
+
+<p>Nous allons ajouter un tag à nos logs afin de différencier les recherches des ventes:
+{% highlight bash %}
+filter {
+    [...]
+    if [classname] =~ /.*SellRequest/ {
+        mutate { add_tag => "sell" }
+    } else if [classname] =~ /SearchRequest$/ {
+        mutate { add_tag => "search" }
+    }
+}
+{% endhighlight %}
+</p>
+
+<p>Relancez logstash et passez lui en entrée la ligne suivante:
+{% highlight bash %}
+08-10-2013 16:33:49.629 [pool-1-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=41,ip=157.55.34.94,brand=Apple,name=iPhone 5C,model=iPhone 5C - Blanc - Disque 16Go,category=Mobile,color=Blanc,options=Disque 16Go,price=599.0
+08-10-2013 16:33:49.629 [pool-1-thread-1] INFO com.github.vspiewak.loggenerator.SellRequest - id=41,ip=157.55.34.94,brand=Apple,name=iPhone 5C,model=iPhone 5C - Blanc - Disque 16Go,category=Mobile,color=Blanc,options=Disque 16Go,price=599.0
+{% endhighlight %}
+</p>
+
+<p>Notez au passage que logstash permet l'utilisation de conditions, pour en savoir plus:
+    <ul>
+        <li><a target="_blank" href="http://logstash.net/docs/1.2.2/configuration#conditionals">Documentation</a></li>
+    </ul>
+</p>
+
+<h4>Conversion de type</h4>
+
+<p>Le filtre mutate permet de convertir certains champs en entier, flottant ou string.
+Nous ajoutons à notre configuration la conversion des champs id et price:
+{% highlight bash %}
+filter {
+    [...]
+    mutate {
+        convert => [ "id", "integer" ]
+        convert => [ "price", "float" ]
+    }   
+}
+{% endhighlight %}
+</p>
+
+<h4>Suppression d'un champ</h4>
+
+<p>Toujours avec le filtre mutate, nous allons supprimer le champ "msg".
+Nous avons en effet parsé ce champ avec le filtre kv et n'avons plus besoin de ce doublon d'information.
+{% highlight bash %}
+filter {
+    [...] 
+    mutate {
+        [...]
+        remove_field => [ "msg" ]  
+    }  
+}
+{% endhighlight %}
+</p>
+
+<h4>Split d'un champ</h4>
+
+<p>Pour finir avec le filtre mutate, nous allons splité notre champ "options" afin d'avoir un tableau d'options.
+{% highlight bash %}
+filter {
+    [...]
+    mutate {
+        [...]
+       split => [ "options", "|" ]
+    }
+}
+{% endhighlight %}
+</p>
+
+<p>RAJOUTER UNE LIGNE DE LOG POUR TESTER LES DIFFERENTES OPTIONS, OU ALORS MODIFIER LES PRECEDENTES</p>
+
+<h3>Résultat final</h3>
+
+<p>EST-CE QU'ON LES FAIT CHERCHER UN PEU PLUTOT QUE DE TOUJOURS DONNER LA SOLUCE?</p>
+
 <p>OBLIGATOIRE LA MISE EN PLACE DE GEO IP?</p>
 
 <p>METTRE UN LIEN VERS LE FICHIER DE CONFIG COMPLET AU CAS OU POUR QUE LES PARTICIPANTS PUISSENT CONTINUER L'ATELIER</p>
