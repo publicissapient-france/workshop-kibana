@@ -327,9 +327,15 @@ filter {
  
     mutate {
         add_field => [ "[geoip][lnglat]", "%{[geoip][longitude]}", "tmplat", "%{[geoip][latitude]}" ]
+    }
+
+    mutate {
         merge => [ "[geoip][lnglat]", "tmplat" ]
+    }
+
+    mutate {
         convert => [ "[geoip][lnglat]", "float" ]
-        remove => [ "tmplat" ]
+        remove_field => [ "tmplat" ]
     }
 }
 {% endhighlight %}
