@@ -219,6 +219,26 @@ filter {
 Logstash parse maintenant notre ligne de vente et ajoute automatiquement les champs category, brand, name, model, color, options et price.
 </p>
 
+<h3>Filtre GeoIP</h3>
+
+<p>Le filtre geoip permet d'ajouter des informations de géolocalisation via une adresse ip (ou hostname).
+Logstash utilise la base de donnée GeoCityLite de Maxmind sous license CCA-ShareAlike 3.0. 
+<ul><li><a href="https://www.maxmind.com/app/geolite" target="_blank">https://www.maxmind.com/app/geolite</a></li></ul>
+Nous allons utiliser une version de GeoCity téléchargé au préalable sur le site Maxmind plutôt que la version embarquée dans Logstash. Copiez le fichier ~/tools/GeoLiteCity.dat dans ~/workshop et rajoutez le filtre dans la configuration logstash:
+
+{% highlight bash %}
+filter {
+    [...]
+
+    geoip {
+        source => "ip"
+        database => "./GeoLiteCity.dat"
+    }
+}
+{% endhighlight %}
+</p>
+
+
 <h3>Filtre mutate</h3>
 
 <p>Le filtre mutate est un filtre "couteaux suisses" permettant une multitude de modifications.</p>
@@ -295,22 +315,31 @@ filter {
 {% endhighlight %}
 </p>
 
-<p>RAJOUTER UNE LIGNE DE LOG POUR TESTER LES DIFFERENTES OPTIONS, OU ALORS MODIFIER LES PRECEDENTES</p>
+<h3>GeoIP et Bettermap</h3>
+
+<p>Le panel Bettermap de Kibana requiert un champ contenant les coordonnées GPS au format Geo_JSON (format: [ longitude, latitude ]).</p>
+
+<p>Ajoutez un champ "geoip.lnglat" contenant le tableau de coordonnées via le "hack" suivant:
+
+{% highlight bash %}
+filter {
+    [...]
+ 
+    mutate {
+        add_field => [ "[geoip][lnglat]", "%{[geoip][longitude]}", "tmplat", "%{[geoip][latitude]}" ]
+        merge => [ "[geoip][lnglat]", "tmplat" ]
+        convert => [ "[geoip][lnglat]", "float" ]
+        remove => [ "tmplat" ]
+    }
+}
+{% endhighlight %}
+</p>
 
 <h3>Résultat final</h3>
 
-<p>EST-CE QU'ON LES FAIT CHERCHER UN PEU PLUTOT QUE DE TOUJOURS DONNER LA SOLUCE?</p>
-
-<p>OBLIGATOIRE LA MISE EN PLACE DE GEO IP?</p>
-
-<p>METTRE UN LIEN VERS LE FICHIER DE CONFIG COMPLET AU CAS OU POUR QUE LES PARTICIPANTS PUISSENT CONTINUER L'ATELIER</p>
-
 {% highlight bash %}
 input {
-    stdin {}
-    file {
-        path => "/tmp/logstash/*.log"
-    }
+  stdin { } 
 }
 
 filter {
@@ -320,6 +349,7 @@ filter {
     }
 
     date {
+        #timezone => "UTC"
         match => ["log_date","dd-MM-YYYY HH:mm:ss.SSS"]
     }
 
@@ -328,27 +358,32 @@ filter {
         source => "msg"
     }
 
-    if [classname] =~ /.*SellRequest$/ {
-        mutate { add_tag => "sell" }
-    } else if [classname] =~ /SearchRequest$/ {
-        mutate { add_tag => "search" }
-    }
-
     geoip {
         source => "ip"
         database => "./GeoLiteCity.dat"
     }
 
+    if [classname] =~ /.*SellRequest/ {
+        mutate { add_tag => "sell" }
+    } else if [classname] =~ /SearchRequest$/ {
+        mutate { add_tag => "search" }
+    }
+
     mutate {
-        remove_field => [ "msg" ]
         convert => [ "id", "integer" ]
         convert => [ "price", "float" ]
+        remove_field => [ "msg" ]
         split => [ "options", "|" ]
+    }
+
+    # hack pour Bettermap panel de Kibana
+    mutate {
         add_field => [ "[geoip][lnglat]", "%{[geoip][longitude]}", "tmplat", "%{[geoip][latitude]}" ]
         merge => [ "[geoip][lnglat]", "tmplat" ]
         convert => [ "[geoip][lnglat]", "float" ]
-        remove_field => [ "tmplat" ]
+        remove => [ "tmplat" ]
     }
+
 }
 
 output {
