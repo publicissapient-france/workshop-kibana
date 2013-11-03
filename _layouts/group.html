@@ -2,7 +2,32 @@
 layout: main
 css: ../stylesheets/stylesheet.css
 ---
-<p>Expliquer comment se logger aux machines amazon</p>
+<p>Dans ce workshop, vous aurez à votre disposition trois instances amazon :</p>
+<ul>
+  <li>une instance contenant un générateur de log et logstash : <strong>{{page.groupId}}-0-kibana.aws.xebiatechevent.info</strong></li>
+  <li>une instance contenant elasticsearch et kibana : <strong>{{page.groupId}}-1-kibana.aws.xebiatechevent.info</strong></li>
+  <li>une instance contenant des logs apache et logstash : <strong>{{page.groupId}}-2-kibana.aws.xebiatechevent.info</strong></li>
+</ul>
+
+<p>Toutes les machines utilisent la même clef ssh, et ont le même login <em>ubuntu</em>. Dans le répertoire /home/ubuntu/tools, vous trouverez l'ensemble des outils nécéssaires durant le workshop, c'est à dire : </p>
+
+<ul>
+  <li>une archive contenant kibana : <strong>kibana-latest.zip</strong></li>
+  <li>un jar logstash : <strong>logstash-1.2.1-flatjar.jar</strong></li>
+  <li>un jar contenant un générateur de log : <strong>log-generator.jar</strong></li>
+  <li>une archive contenant elasticsearch : <strong>elasticsearch-0.90.5.tar.gz</strong></li>
+  <li>un fichier contanant des données de géolocalisation : <strong>GeoLiteCity.dat</strong></li>
+</ul>
+
+<p>Pour vous connecter aux machines, récupérer le fichier <a>ansible.pem</a> dans votre répertoire courant (la clef sera révoquée après le workshop). N'oubliez pas de changer les permissions sur le fichier :</p>
+{% highlight bash %}
+$ chmod 600 ansible.pem
+{% endhighlight %}
+
+<p>Pour tester l'installation, et vous connecter à la première instance, taper la commande : </p>
+{% highlight bash %}
+$ ssh -i ansible.pem ubuntu@{{page.groupId}}-0-kibana.aws.xebiatechevent.info
+{% endhighlight %}
 
 <h1>Logstash</h1>
 <p>Logstash est un pipe permettant de collecter, parser, et stocker des logs à l'aide d'entrées, de filtres et de sorties (input, filter, output). La phase de parsing permet d'ajouter de la sémantique à notre événement, en ajoutant, modifiant ou supprimant des champs, des tags, des types, etc...</p>
