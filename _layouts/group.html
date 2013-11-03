@@ -405,10 +405,70 @@ output {
 
 <h2>Lancer la génération de log</h2>
 
+<p>Maintenant que logstash est capable d'analyser nos logs, nous allons lancer notre générateur.</p>
+
+<h3>Création du dossier contenant les futurs logs</h3>
+<p>
+{% highlight bash %}
+$ mkdir /tmp/logstash
+{% endhighlight %}
+</p>
+
+<h3>Modifier l'entrée de logstash</h3>
+<p>
+Afin que logstash analyse tous les fichiers de log contenu dans le dossier précédemment créé.
+{% highlight bash %}
+input {
+    file {
+        path => "/tmp/logstash/*.log"
+    }
+}
+{% endhighlight %}
+</p>
+
+<h3>Lancez le générateur de log</h3>
+<p>
+    <ul>
+        <li>Copiez le jar ~/tools/log-generator.jar dans le dossier ~/workshop</li>
+        <li>Lancer le générateur afin de générer une ligne de log chaque seconde dans le fichier /tmp/logstash/workshop.log</li>
+    </ul>
+
+{% highlight bash %}
+$ java -jar log-generator.jar -n 1 -r 1000 > /tmp/logstash/workshop.log &
+{% endhighlight %}
+</p>
+
 <h1>ElasticSearch</h1>
 
-<p>Maintenant que Logstash est configuré pour parser nos logs et les transformer dans un format convenable, nous allons stocker ces logs ElasticSearch. LES AVANTAGES DE FAIRE CA</p>
+<p>Maintenant que Logstash est configuré pour parser nos logs et les transformer dans un format convenable, nous allons stocker ces logs dans ElasticSearch.</p>
 
-<p>Comment faire ça?</p>
+<h2>Configuration d'ElasticSearch</h2>
+
+<p>Connectez vous à la vm {{page.vm-es-kibana}}. Créez un répertoire workshop. Copiez dans ce répertoire, l'archive d'ElasticSearch présente dans le répertoire ~/tools.</p>
+
+<p>Configuration dans ElasticSearch:
+{% highlight bash %}
+cluster.name: elasticsearch
+{% endhighlight %}
+</p>
+
+<p>Modification de la sortie de logstash:
+{% highlight bash %}
+output {
+    elasticsearch {
+        embedded => false
+        host => "{{page.vm-es-kibana}}"
+        cluster => "elasticsearch"
+        port => 9300
+    }
+}
+{% endhighlight %}
+</p>
+
+<p>Pour tester la création d'index:</p>
+{% highlight bash %}
+$ curl -s http://127.0.0.1:9200/_status?pretty=true | grep logstash
+$ curl -gs -XGET "http://localhost:9200/logstash-*/_count"
+{% endhighlight %}
 
 <h1>Kibana</h1>
