@@ -19,7 +19,7 @@ css: ../stylesheets/stylesheet.css
   <li>un fichier contanant des données de géolocalisation : <strong>GeoLiteCity.dat</strong></li>
 </ul>
 
-<p>Pour vous connecter aux machines, récupérer le fichier <a>ansible.pem</a> dans votre répertoire courant (la clef sera révoquée après le workshop). N'oubliez pas de changer les permissions sur le fichier :</p>
+<p>Pour vous connecter aux machines, récupérer le fichier <a href="http://gegron.github.io/kibana-workshop/data/kibana.pem">ansible.pem</a> dans votre répertoire courant (la clef sera révoquée après le workshop). N'oubliez pas de changer les permissions sur le fichier :</p>
 {% highlight bash %}
 $ chmod 600 ansible.pem
 {% endhighlight %}
@@ -563,16 +563,16 @@ sudo /etc/init.d/apache2 restart
 {% endhighlight %}
 </p>
 
-<p>Vous devriez pouvoir acceder au dashboard via l'url: <a href="{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana">{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana</a></p>
+<p>Vous devriez pouvoir acceder au dashboard via l'url: <a href="http://{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana">{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana</a></p>
 
 <h2>Dashboard Logstash</h2>
 <p>Kibana vous propose un dashboard pré-configuré si vos données viennent de Logstash/ES. 
-Vous pouvez y acceder via l'url: <a href="{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana/index.html#/dashboard/file/logstash.json">{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana/index.html#/dashboard/file/logstash.json</a>.
+Vous pouvez y acceder via l'url: <a href="http://{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana/index.html#/dashboard/file/logstash.json">{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana/index.html#/dashboard/file/logstash.json</a>.
 </p>
 
 <h2>Dashboard GeekShop</h2>
 <p>Nous allons créer un dashboard personnalisé pour notre boutique en ligne. 
-Commencez avec un dashboard vide accessible à l'adresse: <a href="{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana/index.html#/dashboard/file/blank.json">{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana/index.html#/dashboard/file/blank.json</a>.
+Commencez avec un dashboard vide accessible à l'adresse: <a href="http://{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana/index.html#/dashboard/file/blank.json">{{page.groupId}}-1-kibana.aws.xebiatechevent.info/kibana/index.html#/dashboard/file/blank.json</a>.
 N'oubliez pas de sauvegarder régulièrement votre dashboard dans Elasticsearch grâce au menu situé en haut à droite.
 </p>
 <h3>Configuration générale</h3>
