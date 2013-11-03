@@ -21,14 +21,14 @@ css: ../stylesheets/stylesheet.css
   <li>un fichier contanant des données de géolocalisation : <strong>GeoLiteCity.dat</strong></li>
 </ul>
 
-<p>Pour vous connecter aux machines, récupérer le fichier <a href="http://gegron.github.io/kibana-workshop/data/kibana.pem">ansible.pem</a> dans votre répertoire courant (la clef sera révoquée après le workshop). N'oubliez pas de changer les permissions sur le fichier :</p>
+<p>Pour vous connecter aux machines, récupérer le fichier <a href="http://gegron.github.io/kibana-workshop/data/kibana.pem">kibana.pem</a> dans votre répertoire courant (la clef sera révoquée après le workshop). N'oubliez pas de changer les permissions sur le fichier :</p>
 {% highlight bash %}
-$ chmod 600 ansible.pem
+$ chmod 600 kibana.pem
 {% endhighlight %}
 
 <p>Pour tester l'installation, et vous connecter à la première instance, taper la commande : </p>
 {% highlight bash %}
-$ ssh -i ansible.pem ubuntu@{{page.groupId}}-0-kibana.aws.xebiatechevent.info
+$ ssh -i kibana.pem ubuntu@{{page.groupId}}-0-kibana.aws.xebiatechevent.info
 {% endhighlight %}
 
 <h1>Logstash</h1>
