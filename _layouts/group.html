@@ -469,12 +469,14 @@ $ java -jar log-generator.jar -n 10 -r 1000 > /tmp/logstash/workshop.log &
 
 <h2>Configuration d'ElasticSearch</h2>
 
-<p>Connectez vous à la vm {{page.groupId}}-1-kibana.aws.xebiatechevent.info et effectuez les opérations suivantes:
+<p>Connectez vous à la vm {{page.groupId}}-1-kibana.aws.xebiatechevent.info et effectuez les opérations suivantes :
+{% highlight bash %}
+$ ssh -i ansible.pem ubuntu@{{page.groupId}}-1-kibana.aws.xebiatechevent.info
+{% endhighlight %}
     <ul>
         <li>créez un répertoire workshop</li>
         <li>copiez dans ce répertoire l'archive d'ElasticSearch présente dans le répertoire ~/tools</li>
     </ul>
-</p>
 
 <h2>Template de mapping ElasticSearch pour les index Logstash</h2>
 <p>
