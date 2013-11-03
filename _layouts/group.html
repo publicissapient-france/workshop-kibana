@@ -444,13 +444,68 @@ $ java -jar log-generator.jar -n 1 -r 1000 > /tmp/logstash/workshop.log &
 
 <h2>Configuration d'ElasticSearch</h2>
 
-<p>Connectez vous à la vm {{page.vm-es-kibana}}. Créez un répertoire workshop. Copiez dans ce répertoire, l'archive d'ElasticSearch présente dans le répertoire ~/tools.</p>
-
-<p>Configuration dans ElasticSearch:
+<p>Connectez vous à la vm {{page.vm-es-kibana}} et effectuez les opérations suivantes:
+    <ul>
+        <li>créez un répertoire workshop</li>
+        <li>copiez dans ce répertoire l'archive d'ElasticSearch présente dans le répertoire ~/tools</li>
+        <li>éditez le fichier ~/workshop/elasticsearch-0.90.5/config/elasticsearch.yml afin de décommenter la ligne
 {% highlight bash %}
 cluster.name: elasticsearch
 {% endhighlight %}
+        </li>
+        <li>sauvegardez le fichier</li>
+    </ul>
 </p>
+
+<h2>Template de mapping ElasticSearch pour les index Logstash</h2>
+<p>
+    <ul>
+        <li>lancez ElasticSearch
+{% highlight bash %}
+$ ~/workshop/elasticsearch-0.90.5/bin/elasticsearch -f &
+{% endhighlight %}
+        </li>
+        <li>ajoutez le template suivante afin d'utiliser l'analyser "keyword" pour les champs "name", "model", "options" et "email":
+{% highlight bash %}
+curl -XPUT http://localhost:9200/_template/logstash_per_index -d '{             
+    "template" : "logstash*",
+                   
+    "mappings" : {           
+        "_default_" : {
+           "_all" : {"enabled" : false},
+           "properties" : {
+              "@fields" : {
+                   "type" : "object",
+                   "dynamic": true,  
+                   "path": "full"
+              },               
+              "@message": { "type": "string", "index": "analyzed" },
+              "@source": { "type": "string", "index": "not_analyzed" },
+              "@source_host": { "type": "string", "index": "not_analyzed" },
+              "@source_path": { "type": "string", "index": "not_analyzed" },
+              "@tags": { "type": "string", "index": "not_analyzed" },
+              "@timestamp": { "type": "date", "index": "not_analyzed" },
+              "@type": { "type": "string", "index": "not_analyzed" },
+ 
+              "ip": { "type" : "ip" }, 
+              "name": { "type" : "string", "analyzer": "keyword", "index": "analyzed" },
+              "model": { "type" : "string", "analyzer": "keyword", "index": "analyzed" },
+              "options": { "type" : "string", "analyzer": "keyword", "index": "analyzed" },
+              "email": { "type" : "string", "analyzer": "keyword", "index": "analyzed" }
+ 
+            }             
+        }
+   }
+}                
+'
+{% endhighlight %}
+        </li>
+    </ul>
+</p>
+
+<h2>Branchement de logstash avec ElasticSearch</h2>
+
+<p>ElasticSearch est maintenant configuré. Nous allons donc configurer logstash pour qu'il envoit les logs analysés dans le moteur de recherche.</p>
 
 <p>Modification de la sortie de logstash:
 {% highlight bash %}
@@ -465,10 +520,18 @@ output {
 {% endhighlight %}
 </p>
 
-<p>Pour tester la création d'index:</p>
+<p>C'est tout ce qu'il y a à faire. Vous pouvez maintenant redémarrer logstash et pour vérifier qu'ElasticSearch est bien alimenté, retourner sur la vm d'ElasticSearch et lancez les deux commandes suivantes.</p>
+
+<p>Pour lister les index:
 {% highlight bash %}
 $ curl -s http://127.0.0.1:9200/_status?pretty=true | grep logstash
+{% endhighlight %}
+</p>
+
+<p>Pour voir le nombre de documents indexés:
+{% highlight bash %}
 $ curl -gs -XGET "http://localhost:9200/logstash-*/_count"
 {% endhighlight %}
+</p>
 
 <h1>Kibana</h1>
