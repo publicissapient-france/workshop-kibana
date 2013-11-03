@@ -469,7 +469,7 @@ $ java -jar log-generator.jar -n 10 -r 1000 > /tmp/logstash/workshop.log &
 
 <h2>Configuration d'ElasticSearch</h2>
 
-<p>Connectez vous à la vm {{page.vm-es-kibana}} et effectuez les opérations suivantes:
+<p>Connectez vous à la vm {{page.groupId}}-1-kibana.aws.xebiatechevent.info et effectuez les opérations suivantes:
     <ul>
         <li>créez un répertoire workshop</li>
         <li>copiez dans ce répertoire l'archive d'ElasticSearch présente dans le répertoire ~/tools</li>
@@ -530,7 +530,7 @@ curl -XPUT http://localhost:9200/_template/logstash_per_index -d '{
 {% highlight bash %}
 output {
     elasticsearch {
-        host => "{{page.vm-es-kibana}}"
+        host => "{{page.groupId}}-1-kibana.aws.xebiatechevent.info"
     }
 }
 {% endhighlight %}
