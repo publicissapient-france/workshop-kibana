@@ -196,8 +196,7 @@ filter {
 }
 {% endhighlight %}
 </p>
-
-<p>PARLER DE LA TIMEZONE ??</p>
+<p>Logstash normalise les dates au format UTC automatiquement.</p>
 
 <h3>Filtre kv</h3>
 
@@ -249,7 +248,7 @@ Logstash parse maintenant notre ligne de vente et ajoute automatiquement les cha
 <p>Le filtre geoip permet d'ajouter des informations de géolocalisation via une adresse ip (ou hostname).
 Logstash utilise la base de donnée GeoCityLite de Maxmind sous license CCA-ShareAlike 3.0. 
 <ul><li><a href="https://www.maxmind.com/app/geolite" target="_blank">https://www.maxmind.com/app/geolite</a></li></ul>
-Nous allons utiliser une version de GeoCity téléchargé au préalable sur le site Maxmind plutôt que la version embarquée dans Logstash. Copiez le fichier ~/tools/GeoLiteCity.dat dans ~/workshop et rajoutez le filtre dans la configuration logstash:
+Nous allons utiliser une version de GeoCity téléchargée au préalable sur le site Maxmind plutôt que la version embarquée dans Logstash. Copiez le fichier ~/tools/GeoLiteCity.dat dans ~/workshop et rajoutez le filtre dans la configuration logstash:
 
 {% highlight bash %}
 filter {
