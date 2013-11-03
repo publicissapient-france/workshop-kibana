@@ -551,3 +551,81 @@ $ curl -gs -XGET "http://localhost:9200/logstash-*/_count"
 </p>
 
 <h1>Kibana</h1>
+<p></p>
+<h2>Installation</h2>
+<p>Installation de Kibana dans Apache:
+{% highlight bash %}
+cd /var/www
+sudo unzip /home/ubuntu/tools/kibana-latest.zip 
+sudo mv kibana-latest kibana
+sudo /etc/init.d/apache2 restart
+{% endhighlight %}
+</p>
+
+<p>Vous devriez pouvoir acceder au dashboard via l'url: <a href="{{page.vm-es-kibana}}/kibana">{{page.vm-es-kibana}}/kibana</a></p>
+
+<h2>Dashboard Logstash</h2>
+<p>Kibana vous propose un dashboard pré-configuré si vos données viennent de Logstash/ES. 
+Vous pouvez y acceder via l'url: <a href="{{page.vm-es-kibana}}/kibana/index.html#/dashboard/file/logstash.json">{{page.vm-es-kibana}}/kibana/index.html#/dashboard/file/logstash.json</a>.
+</p>
+
+<h2>Dashboard GeekShop</h2>
+<p>Nous allons créer un dashboard personnalisé pour notre boutique en ligne. 
+Commencez avec un dashboard vide accessible à l'adresse: <a href="{{page.vm-es-kibana}}/kibana/index.html#/dashboard/file/blank.json">{{page.vm-es-kibana}}/kibana/index.html#/dashboard/file/blank.json</a>.
+N'oubliez pas de sauvegarder régulièrement votre dashboard dans Elasticsearch grâce au menu situé en haut à droite.
+</p>
+<h3>Configuration générale</h3>
+<p>Cliquez sur la roue crantée tout en haut à droite afin de faire apparaître le menu "Dashboard Settings":
+<ul>
+    <li>dans l'onglet "General", changez le titre du dashboard</li>
+    <li>dans l'onglet "Index", selectionnez "day", puis entrez "[logstash-]YYYY.MM.DD" dans le champ index pattern</li>
+    <li>dans l'onglet "Rows", ajouter les lignes "timeline", "hits", "search", "sell", "events" en cliquant sur "Create Row"</li>
+</ul>
+</p>
+<h3>Configuration des queries</h3>
+<p>Ajoutez des barres de recherches en cliquant sur l'icône "+". Entrez les queries suivantes:
+<ul>
+    <li>tags:"search"</li>
+    <li>tags:"sell"</li>
+    <li>sex:"M"</li>
+    <li>sex:"F"</li>
+</p>
+<p>Donnez un alias aux queries (en cliquant sur le rond de couleur):
+<ul>
+    <li>search</li>
+    <li>sell</li>
+    <li>men</li>
+    <li>women</li>
+Puis épinglez les queries via le bouton "Pin".
+</p>
+<h3>Ligne Timeline</h3>
+<p>Ajoutez un panel "histogram" dans la première ligne. 
+    Configurez la taille à 6.</p>
+<p>Ajoutez un panel "bettermap" toujours dans la première ligne. 
+    Configurez la taille à 6. 
+    Insérez "geoip.lnglat" pour le champ "Coordinate Field".
+</p>
+<h3>Ligne Hits</h3>
+<p>Ajoutez un panel "pie" de taille 2. Selectionnez le mode "goal". Sélectionnez la query "search" (queries => selected).</p>
+<p>Ajoutez un panel "pie" de taille 2. Selectionnez le mode "goal". Sélectionnez la query "sell".</p>
+<p>Ajoutez un panel "hits" de taille 2. Selectionnez le style "pie". Sélectionnez les queries "search" et "sell".</p>
+<p>Ajoutez un panel "hits" de taille 2. Selectionnez le style "pie". Sélectionnez les queries "men" et "women".</p>
+<p>Ajoutez un panel "hits" de taille 4. Selectionnez le style "bar". Sélectionnez les queries "search", "sell", "men" et "women".</p>
+
+<h3>Ligne Search</h3>
+<p>Ajoutez un panel "terms" de taille 2. Insérez "category" dans le champ "Field". Selectionnez le style "pie". Sélectionnez la query "search".</p>
+<p>Ajoutez un panel "terms" de taille 3. Insérez "options" dans le champ "Field". Selectionnez le style "table". Sélectionnez la query "search".</p>
+<p>Ajoutez un panel "terms" de taille 3. Insérez "geoip.ip" dans le champ "Field". Selectionnez le style "table". Sélectionnez la query "search".</p>
+<p>Ajoutez un panel "terms" de taille 4. Insérez "name" dans le champ "Field". Selectionnez le style "bar". Sélectionnez la query "search".</p>
+
+<h3>Ligne Sell</h3>
+<p>Ajoutez un panel "terms" de taille 2. Insérez "category" dans le champ "Field". Selectionnez le style "pie". Sélectionnez la query "sell".</p>
+<p>Ajoutez un panel "terms" de taille 3. Insérez "email" dans le champ "Field". Selectionnez le style "table". Sélectionnez la query "sell".</p>
+<p>Ajoutez un panel "terms" de taille 3. Insérez "name" dans le champ "Field". Selectionnez le style "table". Sélectionnez la query "sell".</p>
+<p>Ajoutez un panel "terms" de taille 4. Insérez "model" dans le champ "Field". Selectionnez le style "bar". Sélectionnez la query "sell".</p>
+
+<h3>Ligne Events</h3>
+<p>Ajoutez un panel de type "table" de taille 2. Sélectionnez la query "courante" "*"</p>
+
+
+
