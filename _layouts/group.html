@@ -2,7 +2,7 @@
 layout: main
 css: ../stylesheets/stylesheet.css
 ---
-<p>Dans ce workshop, vous aurez à votre disposition trois instances amazon :</p>
+<p>Dans ce workshop, vous aurez à votre disposition <!--trois--> deux instances amazon :</p>
 <ul>
   <li>une instance contenant un générateur de log et logstash : <strong>{{page.groupId}}-0-kibana.aws.xebiatechevent.info</strong></li>
   <li>une instance contenant elasticsearch et kibana : <strong>{{page.groupId}}-1-kibana.aws.xebiatechevent.info</strong></li>
@@ -18,7 +18,7 @@ css: ../stylesheets/stylesheet.css
   <li>un jar logstash : <strong>logstash-1.2.1-flatjar.jar</strong></li>
   <li>un jar contenant un générateur de log : <strong>log-generator.jar</strong></li>
   <li>une archive contenant elasticsearch : <strong>elasticsearch-0.90.5.tar.gz</strong></li>
-  <li>un fichier contanant des données de géolocalisation : <strong>GeoLiteCity.dat</strong></li>
+  <li>un fichier contenant des données de géolocalisation : <strong>GeoLiteCity.dat</strong></li>
 </ul>
 
 <p>Pour vous connecter aux machines, récupérer le fichier <a href="http://gegron.github.io/kibana-workshop/data/kibana.pem">kibana.pem</a> dans votre répertoire courant (la clef sera révoquée après le workshop). N'oubliez pas de changer les permissions sur le fichier :</p>
@@ -162,7 +162,7 @@ filter {
 
 </p>
 
-<p>À ce niveau, nous constatons que l'intégralité du message a été parsé et est maintenant interprété. Par contre, même si nous avons correctement interprété la date du log, le champ <code>@timestamp</code> contient toujours la date de lecture par logstash. Il serait plus intéressant de mettre dans ce champ la date de log. Pour celà, il va falloir utiliser un autre type de filtre, le filtre date.</p>
+<p>À ce niveau, nous constatons que l'intégralité du message a été parsé et est maintenant interprété. Par contre, même si nous avons correctement interprété la date du log, le champ <code>@timestamp</code> contient toujours la date de lecture par logstash. Il serait plus intéressant de mettre dans ce champ la date de log. Pour cela, il va falloir utiliser un autre type de filtre, le filtre date.</p>
 
 <h3>Filtre date</h3>
 
@@ -172,7 +172,7 @@ filter {
     </ul>
 </p>
 
-<p>Le filtre date est l'un des filtre les plus important. Il permet en effet de parser une date et de l'utiliser pour le champ <code>@timestamp</code>. Rajoutez le filtre dans le fichier de configuration:
+<p>Le filtre date est l'un des filtres les plus importants. Il permet en effet de parser une date et de l'utiliser pour le champ <code>@timestamp</code>. Rajoutez le filtre dans le fichier de configuration:
 {% highlight bash %}
 filter {
     [...]
