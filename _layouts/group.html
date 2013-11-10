@@ -489,36 +489,29 @@ $ ~/workshop/elasticsearch-0.90.5/bin/elasticsearch
         </li>
         <li>ajoutez le template suivante afin d'utiliser l'analyser "keyword" pour les champs "name", "model", "options" et "email":
 {% highlight bash %}
-curl -XPUT http://localhost:9200/_template/logstash_per_index -d '{             
+curl -XPUT http://localhost:9200/_template/logstash_per_index -d '{
     "template" : "logstash*",
-                   
-    "mappings" : {           
+    "mappings" : {
         "_default_" : {
            "_all" : {"enabled" : false},
            "properties" : {
               "@fields" : {
                    "type" : "object",
-                   "dynamic": true,  
+                   "dynamic": true, 
                    "path": "full"
-              },               
-              "@message": { "type": "string", "index": "analyzed" },
-              "@source": { "type": "string", "index": "not_analyzed" },
-              "@source_host": { "type": "string", "index": "not_analyzed" },
-              "@source_path": { "type": "string", "index": "not_analyzed" },
-              "@tags": { "type": "string", "index": "not_analyzed" },
+              },
               "@timestamp": { "type": "date", "index": "not_analyzed" },
-              "@type": { "type": "string", "index": "not_analyzed" },
- 
-              "ip": { "type" : "ip" }, 
+              "tags": { "type": "string", "index": "not_analyzed" },
+              "ip": { "type" : "ip", "analyzer": "keyword", "index": "analyzed" },
               "name": { "type" : "string", "analyzer": "keyword", "index": "analyzed" },
               "model": { "type" : "string", "analyzer": "keyword", "index": "analyzed" },
               "options": { "type" : "string", "analyzer": "keyword", "index": "analyzed" },
               "email": { "type" : "string", "analyzer": "keyword", "index": "analyzed" }
  
-            }             
+            }
         }
    }
-}                
+}
 '
 {% endhighlight %}
         </li>
