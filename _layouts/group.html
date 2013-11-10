@@ -487,7 +487,7 @@ $ ssh -i kibana.pem ubuntu@{{page.groupId}}-1-kibana.aws.xebiatechevent.info
 $ ~/workshop/elasticsearch-0.90.5/bin/elasticsearch
 {% endhighlight %}
         </li>
-        <li>ajoutez le template suivante afin d'utiliser l'analyser "keyword" pour les champs "name", "model", "options" et "email":
+        <li>ajoutez le template suivante afin d'utiliser l'analyser "keyword" pour les champs "ip", name", "model", "options" et "email":
 {% highlight bash %}
 curl -XPUT http://localhost:9200/_template/logstash_per_index -d '{
     "template" : "logstash*",
@@ -495,11 +495,6 @@ curl -XPUT http://localhost:9200/_template/logstash_per_index -d '{
         "_default_" : {
            "_all" : {"enabled" : false},
            "properties" : {
-              "@fields" : {
-                   "type" : "object",
-                   "dynamic": true, 
-                   "path": "full"
-              },
               "@timestamp": { "type": "date", "index": "not_analyzed" },
               "tags": { "type": "string", "index": "not_analyzed" },
               "ip": { "type" : "ip", "analyzer": "keyword", "index": "analyzed" },
