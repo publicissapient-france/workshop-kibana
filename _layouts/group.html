@@ -480,14 +480,12 @@ $ ssh -i kibana.pem ubuntu@{{page.groupId}}-1-kibana.aws.xebiatechevent.info
     </ul>
 
 <h2>Template de mapping ElasticSearch pour les index Logstash</h2>
-<p>
-    <ul>
-        <li>lancez ElasticSearch
+<p>Lancez ElasticSearch
 {% highlight bash %}
 $ ~/workshop/elasticsearch-0.90.5/bin/elasticsearch
 {% endhighlight %}
-        </li>
-        <li>ajoutez le template suivante afin d'utiliser l'analyser "keyword" pour les champs "ip", name", "model", "options" et "email":
+</p>
+<p>Ajoutez le template suivante afin d'utiliser l'analyser "keyword" pour les champs "ip", name", "model", "options" et "email":
 {% highlight bash %}
 curl -XPUT http://localhost:9200/_template/logstash_per_index -d '{
     "template" : "logstash*",
@@ -509,8 +507,6 @@ curl -XPUT http://localhost:9200/_template/logstash_per_index -d '{
 }
 '
 {% endhighlight %}
-        </li>
-    </ul>
 </p>
 
 <h2>Branchement de logstash avec ElasticSearch</h2>
