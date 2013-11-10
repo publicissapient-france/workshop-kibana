@@ -584,6 +584,7 @@ N'oubliez pas de sauvegarder régulièrement votre dashboard dans Elasticsearch 
     <li>dans l'onglet "Index", selectionnez "day", puis entrez "[logstash-]YYYY.MM.DD" dans le champ index pattern</li>
     <li>dans l'onglet "Rows", ajouter les lignes "timeline", "hits", "search", "sell", "events" en cliquant sur "Create Row"</li>
 </ul>
+<img src="../images/dashboard-index-settings.png" />
 </p>
 <h3>Configuration des queries</h3>
 <p>Ajoutez des barres de recherches en cliquant sur l'icône "+". Entrez les queries suivantes:
@@ -600,6 +601,7 @@ N'oubliez pas de sauvegarder régulièrement votre dashboard dans Elasticsearch 
     <li>men</li>
     <li>women</li>
 Puis épinglez les queries via le bouton "Pin".
+<img src="../images/dashboard-queries.png" />
 </p>
 <h3>Ligne Timeline</h3>
 <p>Ajoutez un panel "histogram" dans la première ligne. 
@@ -607,6 +609,7 @@ Puis épinglez les queries via le bouton "Pin".
 <p>Ajoutez un panel "bettermap" toujours dans la première ligne. 
     Configurez la taille à 6. 
     Insérez "geoip.lnglat" pour le champ "Coordinate Field".
+<img src="../images/dashboard-timeline.png" />
 </p>
 
 <h3>Ligne Hits</h3>
@@ -618,6 +621,7 @@ Puis épinglez les queries via le bouton "Pin".
         <li>Ajoutez un panel "hits" de taille 2. Selectionnez le style "pie". Sélectionnez les queries "men" et "women".</li>
         <li>Ajoutez un panel "hits" de taille 4. Selectionnez le style "bar". Sélectionnez les queries "search", "sell", "men" et "women".</li>
     </ul>
+    <img src="../images/dashboard-hits.png" />
 </p>
 
 <h3>Ligne Search</h3>
@@ -628,6 +632,7 @@ Puis épinglez les queries via le bouton "Pin".
         <li>Ajoutez un panel "terms" de taille 3. Insérez "geoip.ip" dans le champ "Field". Selectionnez le style "table". Sélectionnez la query "search".</li>
         <li>Ajoutez un panel "terms" de taille 4. Insérez "name" dans le champ "Field". Selectionnez le style "bar". Sélectionnez la query "search".</li>
     </ul>
+    <img src="../images/dashboard-search.png" />
 </p>
 
 <h3>Ligne Sell</h3>
@@ -638,6 +643,7 @@ Puis épinglez les queries via le bouton "Pin".
         <li>Ajoutez un panel "terms" de taille 3. Insérez "name" dans le champ "Field". Selectionnez le style "table". Sélectionnez la query "sell".</li>
         <li>Ajoutez un panel "terms" de taille 4. Insérez "model" dans le champ "Field". Selectionnez le style "bar". Sélectionnez la query "sell".</li>
     </ul>
+    <img src="../images/dashboard-sell.png" />
 </p>
 
 <h3>Ligne Events</h3>
