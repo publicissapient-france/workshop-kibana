@@ -485,10 +485,12 @@ $ ssh -i kibana.pem ubuntu@{{page.groupId}}-1-kibana.aws.xebiatechevent.info
     </ul>
 
 <h2>Template de mapping ElasticSearch pour les index Logstash</h2>
-<p>Lancez ElasticSearch
+<p>Lancez ElasticSearch après avoir installé le plugin head:
 {% highlight bash %}
+$ ~/workshop/elasticsearch-0.90.5/bin/plugin -install mobz/elasticsearch-head
 $ ~/workshop/elasticsearch-0.90.5/bin/elasticsearch
 {% endhighlight %}
+Une fois elasticsearch lancé, vous pouvez visualiser facilement votre cluster Elasticsearch via l'url: <a href="http://localhost:9200/_plugin/head">http://localhost:9200/_plugin/head</a>
 </p>
 <p>Ajoutez le template suivante afin d'utiliser l'analyser "keyword" pour les champs "ip", name", "model", "options" et "email":
 {% highlight bash %}
