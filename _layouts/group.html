@@ -71,12 +71,12 @@ $ java -jar logstash-1.2.1-flatjar.jar agent -f logstash-logback.conf
 }
 {% endhighlight %}
 
-<p>On constate que le timestamp enregistré n'est pas du tout lié à celui de la ligne de log. En fait, Logstash n'a pas du tout interprété le message. Pour faire celà, il va falloir configurer un filtre pour Logstash.</p>
+<p>On constate que le timestamp enregistré n'est pas du tout lié à celui de la ligne de log. Logstash n'a pas pris en compte la date incluse dans notre log, il va falloir configurer entre autres un filtre pour cela.</p>
 
 <h2>Ajouter de la sémantique</h2>
 
 <p>Pour configurer Logstash afin qu'il puisse interpréter les données qu'il va recevoir en entrée, nous allons configurer plusieurs filtres.</p>
-<p>Logstash execute le fichier de configuration en prenant l'ordre de déclaration des filtres de vos filtres.</p>
+<p>Logstash execute le fichier de configuration en prenant en compte l'ordre de déclaration de vos filtres.</p>
 
 <h3>Filtre Grok</h3>
 
