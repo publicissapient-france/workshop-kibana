@@ -345,23 +345,25 @@ filter {
 </p>
 
 <h3>GeoIP et Bettermap</h3>
-
-<p>Le panel Bettermap de Kibana requiert un champ contenant les coordonnées GPS au format Geo_JSON (format: [ longitude, latitude ]).</p>
-
+<p>Le panel Bettermap de Kibana requiert un champ contenant les coordonnées GPS au format Geo_JSON (i.e: un tableau de deux float au format: [ longitude, latitude ]).</p>
 <p>Ajoutez un champ "geoip.lnglat" contenant le tableau de coordonnées via le "hack" suivant:
-
 {% highlight bash %}
 filter {
     [...]
- 
+    # geoip.lnglat contiendra le point geo_json, 'tmplat' contient la latitude (temporaire)
+    # les deux champs sont de type string.
     mutate {
         add_field => [ "[geoip][lnglat]", "%{[geoip][longitude]}", "tmplat", "%{[geoip][latitude]}" ]
     }
 
+    # merge du champ tmplat dans geoip.lnglat. 
+    # le champ geoip.lnglat devient un tableau de string
     mutate {
         merge => [ "[geoip][lnglat]", "tmplat" ]
     }
 
+    # conversion du tableau de string en float
+    # suppression du champ tmplat
     mutate {
         convert => [ "[geoip][lnglat]", "float" ]
         remove_field => [ "tmplat" ]
