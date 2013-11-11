@@ -44,7 +44,9 @@ $ ssh -i kibana.pem ubuntu@{{page.groupId}}-0-kibana.aws.xebiatechevent.info
 input {
   stdin { } 
 }
- 
+
+filter { }
+
 output {
   stdout { debug => true }
 }
@@ -74,6 +76,7 @@ $ java -jar logstash-1.2.1-flatjar.jar agent -f logstash-logback.conf
 <h2>Ajouter de la sémantique</h2>
 
 <p>Pour configurer logstash afin qu'il puisse interpréter les données qu'il va recevoir en entrée, nous allons configurer plusieurs filtres.</p>
+<p>Logstash execute le fichier de configuration en prenant l'ordre de déclaration des filtres de vos filtres.</p>
 
 <h3>Filtre Grok</h3>
 
@@ -90,15 +93,11 @@ $ java -jar logstash-1.2.1-flatjar.jar agent -f logstash-logback.conf
 <p>Dans un premier temps, nous voulons juste parser le niveau de log. Pour celà, le pattern <code>LOGLEVEL</code> va nous être utile.</p>
 
 {% highlight bash %}
-input { ... }
-
 filter {
    grok {
       match => ["message","%{LOGLEVEL:log_level}"]
    }
 }
-
-output { ... }
 {% endhighlight %}
 
 <p>Vous pouvez relancer logstash et repasser la ligne de log:</p>
