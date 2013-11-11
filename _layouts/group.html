@@ -4,7 +4,7 @@ css: ../stylesheets/stylesheet.css
 ---
 <p>Dans ce workshop, vous aurez à votre disposition <!--trois--> deux instances amazon :</p>
 <ul>
-  <li>une instance contenant un générateur de log et logstash : <strong>{{page.groupId}}-0-kibana.aws.xebiatechevent.info</strong></li>
+  <li>une instance contenant un générateur de log et Logstash : <strong>{{page.groupId}}-0-kibana.aws.xebiatechevent.info</strong></li>
   <li>une instance contenant elasticsearch et kibana : <strong>{{page.groupId}}-1-kibana.aws.xebiatechevent.info</strong></li>
   <!--
   <li>une instance contenant des logs apache et logstash : <strong>{{page.groupId}}-2-kibana.aws.xebiatechevent.info</strong></li>
@@ -34,11 +34,11 @@ $ ssh -i kibana.pem ubuntu@{{page.groupId}}-0-kibana.aws.xebiatechevent.info
 <h1>Logstash</h1>
 <p>Logstash est un pipe permettant de collecter, parser, et stocker des logs à l'aide d'entrées, de filtres et de sorties (input, filter, output). La phase de parsing permet d'ajouter de la sémantique à notre événement, en ajoutant, modifiant ou supprimant des champs, des tags, des types, etc...</p>
 
-<p>Dans cette première partie de l'atelier, nous allons donc découvrir logstash et le configurer pour structurer nos logs afin qu'ils soient facilement exploitables par la suite.</p>
+<p>Dans cette première partie de l'atelier, nous allons donc découvrir Logstash et le configurer pour structurer nos logs afin qu'ils soient facilement exploitables par la suite.</p>
 
-<h2>Découverte de logstash</h2>
-<p>Copier le jar logstash disponible dans le répertoire <code>~/tools</code> dans le répertoire <code>~/workshop</code></p>
-<p>Dans le répertoire <code>~/workshop</code>, créer un fichier de configuration logstash nommé <code>logstash-logback.conf</code></p>
+<h2>Découverte de Logstash</h2>
+<p>Copier le jar Logstash disponible dans le répertoire <code>~/tools</code> dans le répertoire <code>~/workshop</code></p>
+<p>Dans le répertoire <code>~/workshop</code>, créer un fichier de configuration Logstash nommé <code>logstash-logback.conf</code></p>
 
 {% highlight kconfig %}
 input {
@@ -52,7 +52,7 @@ output {
 }
 {% endhighlight %}
 
-<p>Vous pouvez maintenant exécuter logstash grâce à la commande suivante:</p>
+<p>Vous pouvez maintenant exécuter Logstash grâce à la commande suivante:</p>
 {% highlight bash %}
 $ java -jar logstash-1.2.1-flatjar.jar agent -f logstash-logback.conf
 {% endhighlight %}
@@ -71,11 +71,11 @@ $ java -jar logstash-1.2.1-flatjar.jar agent -f logstash-logback.conf
 }
 {% endhighlight %}
 
-<p>On constate que le timestamp enregistré n'est pas du tout lié à celui de la ligne de log. En fait, logstash n'a pas du tout interprété le message. Pour faire celà, il va falloir configurer un filtre pour logstash.</p>
+<p>On constate que le timestamp enregistré n'est pas du tout lié à celui de la ligne de log. En fait, Logstash n'a pas du tout interprété le message. Pour faire celà, il va falloir configurer un filtre pour Logstash.</p>
 
 <h2>Ajouter de la sémantique</h2>
 
-<p>Pour configurer logstash afin qu'il puisse interpréter les données qu'il va recevoir en entrée, nous allons configurer plusieurs filtres.</p>
+<p>Pour configurer Logstash afin qu'il puisse interpréter les données qu'il va recevoir en entrée, nous allons configurer plusieurs filtres.</p>
 <p>Logstash execute le fichier de configuration en prenant l'ordre de déclaration des filtres de vos filtres.</p>
 
 <h3>Filtre Grok</h3>
@@ -100,7 +100,7 @@ filter {
 }
 {% endhighlight %}
 
-<p>Vous pouvez relancer logstash et repasser la ligne de log:</p>
+<p>Vous pouvez relancer Logstash et repasser la ligne de log:</p>
 
 {% highlight bash %}02-10-2013 14:26:27.724 [pool-10-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=9205,ip=217.109.49.180,cat=TSHIRT{% endhighlight %}
 
@@ -126,7 +126,7 @@ filter {
 }
 {% endhighlight %}
 
-<p>De nouveau, nous pouvons relancer logstash et lui passer notre ligne de log, cette fois, nous allons avoir un résultat de la forme suivante:</p>
+<p>De nouveau, nous pouvons relancer Logstash et lui passer notre ligne de log, cette fois, nous allons avoir un résultat de la forme suivante:</p>
 
 {% highlight bash %}
 {
@@ -165,7 +165,7 @@ filter {
 
 </p>
 
-<p>À ce niveau, nous constatons que l'intégralité du message a été parsé et est maintenant interprété. Par contre, même si nous avons correctement interprété la date du log, le champ <code>@timestamp</code> contient toujours la date de lecture par logstash. Il serait plus intéressant de mettre dans ce champ la date de log. Pour cela, il va falloir utiliser un autre type de filtre, le filtre date.</p>
+<p>À ce niveau, nous constatons que l'intégralité du message a été parsé et est maintenant interprété. Par contre, même si nous avons correctement interprété la date du log, le champ <code>@timestamp</code> contient toujours la date de lecture par Logstash. Il serait plus intéressant de mettre dans ce champ la date de log. Pour cela, il va falloir utiliser un autre type de filtre, le filtre date.</p>
 
 <h3>Filtre date</h3>
 
@@ -218,7 +218,7 @@ filter {
 {% endhighlight %}
 </p>
 
-<p>Relancez logstash et passez lui en entrée la ligne suivante:
+<p>Relancez Logstash et passez lui en entrée la ligne suivante:
 {% highlight bash %}08-10-2013 16:33:49.629 [pool-1-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=41,ip=157.55.34.94,brand=Apple,name=iPhone 5C,model=iPhone 5C - Blanc - Disque 16Go,category=Mobile,color=Blanc,options=Disque 16Go,price=599.0{% endhighlight %}
 </p>
 
@@ -253,7 +253,7 @@ Logstash parse maintenant notre ligne de vente et ajoute automatiquement les cha
 <p>Le filtre geoip permet d'ajouter des informations de géolocalisation via une adresse ip (ou hostname).
 Logstash utilise la base de donnée GeoCityLite de Maxmind sous license CCA-ShareAlike 3.0. 
 <ul><li><a href="https://www.maxmind.com/app/geolite" target="_blank">https://www.maxmind.com/app/geolite</a></li></ul>
-Nous allons utiliser une version de GeoCity téléchargée au préalable sur le site Maxmind plutôt que la version embarquée dans Logstash. Copiez le fichier ~/tools/GeoLiteCity.dat dans ~/workshop et rajoutez le filtre dans la configuration logstash:
+Nous allons utiliser une version de GeoCity téléchargée au préalable sur le site Maxmind plutôt que la version embarquée dans Logstash. Copiez le fichier ~/tools/GeoLiteCity.dat dans ~/workshop et rajoutez le filtre dans la configuration Logstash:
 
 {% highlight bash %}
 filter {
@@ -287,14 +287,14 @@ filter {
 {% endhighlight %}
 </p>
 
-<p>Relancez logstash et passez lui en entrée la ligne suivante:
+<p>Relancez Logstash et passez lui en entrée la ligne suivante:
 {% highlight bash %}
 08-10-2013 16:33:49.629 [pool-1-thread-1] INFO com.github.vspiewak.loggenerator.SearchRequest - id=41,ip=157.55.34.94,brand=Apple,name=iPhone 5C,model=iPhone 5C - Blanc - Disque 16Go,category=Mobile,color=Blanc,options=Disque 16Go,price=599.0
 08-10-2013 16:33:49.629 [pool-1-thread-1] INFO com.github.vspiewak.loggenerator.SellRequest - id=41,ip=157.55.34.94,brand=Apple,name=iPhone 5C,model=iPhone 5C - Blanc - Disque 16Go,category=Mobile,color=Blanc,options=Disque 16Go,price=599.0
 {% endhighlight %}
 </p>
 
-<p>Notez au passage que logstash permet l'utilisation de conditions, pour en savoir plus:
+<p>Notez au passage que Logstash permet l'utilisation de conditions, pour en savoir plus:
     <ul>
         <li><a target="_blank" href="http://logstash.net/docs/1.2.2/configuration#conditionals">Documentation</a></li>
     </ul>
@@ -434,7 +434,7 @@ output {
 
 <h2>Lancer la génération de log</h2>
 
-<p>Maintenant que logstash est capable d'analyser nos logs, nous allons lancer notre générateur.</p>
+<p>Maintenant que Logstash est capable d'analyser nos logs, nous allons lancer notre générateur.</p>
 
 <h3>Création du dossier contenant les futurs logs</h3>
 <p>
@@ -443,9 +443,9 @@ $ mkdir /tmp/logstash
 {% endhighlight %}
 </p>
 
-<h3>Modifier l'entrée de logstash</h3>
+<h3>Modifier l'entrée de Logstash</h3>
 <p>
-Afin que logstash analyse tous les fichiers de log contenu dans le dossier précédemment créé.
+Afin que Logstash analyse tous les fichiers de log contenu dans le dossier précédemment créé.
 {% highlight bash %}
 input {
     file {
@@ -512,11 +512,11 @@ curl -XPUT http://localhost:9200/_template/logstash_per_index -d '{
 {% endhighlight %}
 </p>
 
-<h2>Branchement de logstash avec ElasticSearch</h2>
+<h2>Branchement de Logstash avec ElasticSearch</h2>
 
-<p>ElasticSearch est maintenant configuré. Nous allons donc configurer logstash pour qu'il envoit les logs analysés dans le moteur de recherche.</p>
+<p>ElasticSearch est maintenant configuré. Nous allons donc configurer Logstash pour qu'il envoit les logs analysés dans le moteur de recherche.</p>
 
-<p>Modification de la sortie de logstash:
+<p>Modification de la sortie de Logstash:
 {% highlight bash %}
 output {
     elasticsearch {
@@ -526,7 +526,7 @@ output {
 {% endhighlight %}
 </p>
 
-<p>C'est tout ce qu'il y a à faire. Vous pouvez maintenant redémarrer logstash et pour vérifier qu'ElasticSearch est bien alimenté, retourner sur la vm d'ElasticSearch et lancez les deux commandes suivantes.</p>
+<p>C'est tout ce qu'il y a à faire. Vous pouvez maintenant redémarrer Logstash et pour vérifier qu'ElasticSearch est bien alimenté, retourner sur la vm d'ElasticSearch et lancez les deux commandes suivantes.</p>
 
 <p>Pour lister les index:
 {% highlight bash %}
