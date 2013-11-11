@@ -90,11 +90,15 @@ $ java -jar logstash-1.2.1-flatjar.jar agent -f logstash-logback.conf
 <p>Dans un premier temps, nous voulons juste parser le niveau de log. Pour celà, le pattern <code>LOGLEVEL</code> va nous être utile.</p>
 
 {% highlight bash %}
+input { ... }
+
 filter {
    grok {
       match => ["message","%{LOGLEVEL:log_level}"]
    }
 }
+
+output { ... }
 {% endhighlight %}
 
 <p>Vous pouvez relancer logstash et repasser la ligne de log:</p>
