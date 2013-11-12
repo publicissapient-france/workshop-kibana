@@ -1,3 +1,3 @@
 kibana-workshop
 ===============
-cf. <a href="http://gegron.github.io/kibana-workshop">jekyll site</a>
+cf. <a href="http://xebia-france.github.io/kibana-workshop">jekyll site</a>
