@@ -1,0 +1,23 @@
+---
+- name: Install apache and java
+  apt: pkg={{item}} state=present update_cache=true
+  sudo: true
+  with_items:
+    - openjdk-7-jdk
+    - apache2
+    - unzip
+    - vim
+    - curl
+
+- name: create tools directory
+  file: path=/home/ubuntu/tools state=directory
+
+- name: copy file to tools
+  copy: src={{ item }} dest=/home/ubuntu/tools
+  with_items:
+    - log-generator.jar
+    - GeoLiteCity.dat
+    - elasticsearch-0.90.5.tar.gz
+    - logstash-1.2.1-flatjar.jar
+    - kibana-latest.zip
+

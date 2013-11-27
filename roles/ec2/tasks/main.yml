@@ -1,0 +1,38 @@
+---
+- name: Launch instances
+  ec2: >
+    region=eu-west-1
+    key_name=kibana
+    group=accept-all
+    instance_type=t1.micro
+    image=ami-8e987ef9
+    count=2
+    wait=yes
+  register: ec2
+
+- name: Add instances to host group
+  add_host: name={{ item.public_ip }} groups={{group_kibana}}
+  with_items: ec2.instances
+
+- name: Add tag to instances
+  ec2_tag: resource={{ item.id }} region=eu-west-1 state=present
+  with_items: ec2.instances
+  args:
+    tags:
+      Name: kibana
+      Group: ${group_kibana}
+
+- name: Wait for SSH to come up
+  wait_for: host={{item.public_ip}} port=22 delay=60 timeout=120 state=started
+  with_items: ec2.instances
+
+- name: register dns name
+  route53: >
+    command=create
+    zone=aws.xebiatechevent.info
+    record={{ group_kibana }}-{{ item.ami_launch_index }}-kibana.aws.xebiatechevent.info
+    type=CNAME
+    ttl=1800
+    value={{ item.public_dns_name }}
+  with_items: ec2.instances
+

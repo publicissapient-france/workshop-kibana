@@ -1,0 +1,7 @@
+- name: configure ec2 instance
+  hosts: tag_Group_europa
+  user: ubuntu
+  gather_facts: false
+  roles:
+    - kibana
+
